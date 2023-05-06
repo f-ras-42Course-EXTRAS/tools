@@ -6,7 +6,7 @@
 #    By: fras <fras@student.codam.nl>                 +#+                      #
 #                                                    +#+                       #
 #    Created: 2023/05/05 03:44:02 by fras          #+#    #+#                  #
-#    Updated: 2023/05/06 08:05:39 by fras          ########   odam.nl          #
+#    Updated: 2023/05/06 14:15:37 by fras          ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -92,8 +92,22 @@ echo Repository remote added succesfully..
 ##TODO: ^ built verification.
 git add $source_files
 git commit -m "project upload"
-git push
-echo Files pushed, operation done.
+
+##above verification (untested)
+while [ -z ${git_push_done_check+x} ]
+do
+	git_push_done_check=$(git push | grep "done");
+	if [ ! -z ${$git_push_done_check+x} ];
+	then
+		echo Files pushed, operation done.;
+	else
+		echo Upload not succesful. Try checking your remote.
+		echo Enter the Git remote-url to setup your upload for eval:
+		git remote rm origin
+		read git_remote
+		git remote add origin $git_remote;
+fi
+
 cd ..
 echo Going back to project directory
 rm -rf $destination_directory
