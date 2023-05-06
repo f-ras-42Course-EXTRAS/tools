@@ -6,44 +6,67 @@
 #    By: fras <fras@student.codam.nl>                 +#+                      #
 #                                                    +#+                       #
 #    Created: 2023/05/05 03:44:02 by fras          #+#    #+#                  #
-#    Updated: 2023/05/06 00:56:34 by fras          ########   odam.nl          #
+#    Updated: 2023/05/06 02:53:31 by fras          ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
 #!/bin/bash
 
-# Save starting directory 
-starting_directory=$(echo "$PWD")
+starting_directory= $(echo PWD)
+destination_directory=temp_project_repo
 
-# Get copy directory from command-line arguments
-source_directory=${@:1:$#-1}
-destination_directory=${@:$#}
+# Get project source from command-line arguments
+source_files=${@}
 
 # Check if command-line arguments are valid
-if [ $# -lt 2 ];
+if [ $# -lt 1 ];
+then
+	echo Select project files.
+	echo ------------------------------------------------
+	echo Example: 
+	echo "$0 <source_files>"
+	echo ------------------------------------------------
+	exit 1;
+fi
+
+file_not_found=false
+for i in $source_files; 
+do
+	if [ ! -e "$i" ];
 	then
-		echo Choose directory to copy files 'from' and 'to'. 
-		echo Like how you would use cp.
-		echo ------------------------------------------------
-		echo Example: 
-		echo "$0 <source_directory(s)> <destination_directory>"
-		echo ------------------------------------------------
-		echo Leads to: 
-		echo "cp <source_directory(s)> <destination_directory>"
-		echo ------------------------------------------------
-		exit 1;
+		echo "File: '$i' does not exists..";
+		file_not_found=true;
 	fi
+done
 
-# Start script
-cp -r $source_directory $destination_directory \
-	&& find $destination_directory -name '.*' | xargs rm -rf
-cp .gitignore $destination_directory
+if [ "$file_not_found" = true ];
+then
+	echo Found unexisting files. Closing program. 
+	echo "\n"
+	echo Select correct files.
+	echo ------------------------------------------------
+	echo Example: 
+	echo "$0 <source_project_files>"
+	echo ------------------------------------------------
+	exit 1;
+fi
 
-echo "Copying files <$source_directory> to <$destination_directory>"
+# Transfering files to temporary directory
+rsync -av --exclude=".*" $source_files $destination_directory
+
+gitignore_paths=$(find . -name '.gitignore')
+if [ ! -z "$gitignore_paths" ];
+then
+	echo .gitignore found
+	echo "Copying file(s) <$gitignore_paths> to <$destination_directory>"
+	cp $gitignore_paths $destination_directory
+fi
+
+echo "Files transfered to $destination_directory -> changing directory"
 cd $destination_directory
-echo Changing directory to $destination_directory.
 
-echo Starting to initialize git.
+# Git working
+echo Starting to initialize git
 git init
 echo Enter the Git remote link to setup upload for eval:
 read git_repository
@@ -55,5 +78,5 @@ git push
 echo Files pushed, operation done.
 cd $starting_directory
 echo Going back to starting directory.
-rm -rf $starting_directory
+rm -rf $destination_directory
 echo Copied files deleted.
