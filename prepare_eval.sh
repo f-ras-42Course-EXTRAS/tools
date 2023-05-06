@@ -6,52 +6,45 @@
 #    By: fras <fras@student.codam.nl>                 +#+                      #
 #                                                    +#+                       #
 #    Created: 2023/05/05 03:44:02 by fras          #+#    #+#                  #
-#    Updated: 2023/05/06 06:50:40 by fras          ########   odam.nl          #
+#    Updated: 2023/05/06 08:05:39 by fras          ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
 #!/bin/bash
 
+# Global variables
 starting_directory=$(PWD)
+project_directory=$1
 destination_directory=temp_project_repo
 
-# Get project source from command-line arguments
-source_files=${@}
-
 # Check if command-line arguments are valid
-if [ $# -lt 1 ];
+if [ $# -ne 1 ];
 then
-	echo ERROR: Select project files.
+	echo ERROR: Select path to project files.
 	echo ------------------------------------------------
 	echo Example: 
-	echo "$0 <source_files>"
+	echo "$0 ."
+	echo or
+	echo "$0 ~/path/to/project/"
 	echo ------------------------------------------------
 	exit 1;
 fi
-
-file_not_found=false
-for i in $source_files; 
-do
-	if [ ! -e "$i" ];
+if [ ! -d "$1" ];
 	then
-		echo "ERROR: File '$i' does not exists..";
-		file_not_found=true;
-	fi
-done
-if [ "$file_not_found" = true ];
-then
-	echo Found unexisting files. Closing program. 
+	echo "ERROR: Directory '$1' does not exists..";
 	echo "\n"
-	echo Select correct files.
+	echo Select correct directory.
 	echo ------------------------------------------------
 	echo Example: 
-	echo "$0 <source_project_files>"
+	echo "$0 ."
+	echo or
+	echo "$0 ~/path/to/project/"
 	echo ------------------------------------------------
 	exit 1;
 fi
 
 # <destination_directory> should not exist already
-if [ ! -z $(find . -name $destination_directory -d 1) ]
+if [ ! -z $(find $1 -name $destination_directory -d 1) ]
 then
 	echo "ERROR: Found temporary destination directory $destination_directory/"
 	echo "Do you want program to delete it? (yes/no)"
@@ -62,28 +55,28 @@ then
 		echo $destination_directory/ - DIRECTORY DELETED..
 		echo "Press ENTER to continue"
 		read
-		echo "Continueing program..."
+		echo "Continuing program..."
 	else
 		echo Delete directory and try again.
 		exit;
 	fi
 fi
 
+# Get project source
+echo Going to project directory
+cd $project_directory
+source_files=$(find . ! -name '.*' ! -name $0)
+
 # Copying files
 echo Transfering files to temporary directory
-rsync -av --exclude=".*" $source_files $destination_directory
+rsync -av $source_files $destination_directory
 
 gitignore_paths=$(find . -name '.gitignore')
 if [ ! -z "$gitignore_paths" ];
 then
 	echo .gitignore found
 	echo "Copying file(s) <$gitignore_paths> to <$destination_directory>"
-	cp $gitignore_paths $destination_directory
-	exclude_gitignore_files_for_upload=" --"
-	for i in $gitignore_paths;
-	do
-		exclude_gitignore_files_for_upload+=" '!:$i'";
-	done
+	cp -r $gitignore_paths $destination_directory
 fi
 
 echo "Files transfered to $destination_directory -> changing directory"
@@ -92,29 +85,27 @@ cd $destination_directory
 # Git working
 echo Starting to initialize git
 git init
-echo Enter the Git remote url to setup your upload for eval:
-read git_repository
-git remote add origin $git_repository
+echo Enter the Git remote-url to setup your upload for eval:
+read git_remote
+git remote add origin $git_remote
 echo Repository remote added succesfully..
 ##TODO: ^ built verification.
-git add . $exclude_gitignore_files_for_upload
-git commit -m "project done"
+git add $source_files
+git commit -m "project upload"
 git push
 echo Files pushed, operation done.
-cd $starting_directory
-echo Going back to starting directory.
+cd ..
+echo Going back to project directory
 rm -rf $destination_directory
-echo Copied files deleted.
+echo Temporary copy deleted
 
 ##verififing Git clone (--YET UNTESTED)
-echo Testing if was upload succesful
-source_files=$(find . ! -name '.*' ! -name $0)
+echo Testing if upload was succesful:
 echo Cloning repository..
-git clone $git_repository $destination_directory
-echo Checking if files are as expected..
+git clone $git_remote $destination_directory
+echo Checking if files are uploaded as expected..
 cd $destination_directory
-dest_files=$(find . | -name '.git')
-cd $starting_directory
+dest_files=$(find . ! -name '.git')
 echo Deleting clone..
 rm -rf $destination_directory
 if [ "$source_files" == "$dest_files"];
@@ -126,5 +117,6 @@ else
 	echo $source_files
 	echo Actual files uploaded in destination:
 	echo $dest_files
-	exit 1;
 fi
+echo Going back to starting directory.
+cd $starting_directory
