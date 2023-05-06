@@ -6,7 +6,7 @@
 #    By: fras <fras@student.codam.nl>                 +#+                      #
 #                                                    +#+                       #
 #    Created: 2023/05/05 03:44:02 by fras          #+#    #+#                  #
-#    Updated: 2023/05/06 05:00:21 by fras          ########   odam.nl          #
+#    Updated: 2023/05/06 05:40:52 by fras          ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -79,6 +79,12 @@ then
 	echo .gitignore found
 	echo "Copying file(s) <$gitignore_paths> to <$destination_directory>"
 	cp $gitignore_paths $destination_directory
+	
+	exclude_gitignore_files_for_upload=" --"
+	for i in $gitignore_paths;
+	do
+		exclude_gitignore_files_for_upload+=" '!:$i'"
+done
 fi
 
 echo "Files transfered to $destination_directory -> changing directory"
@@ -91,7 +97,7 @@ echo Enter the Git remote url to setup your upload for eval:
 read git_repository
 git remote add origin $git_repository
 echo Repository remote succesfully added..
-git add .
+git add . $exclude_gitignore_files_for_upload
 git commit -m "project done"
 git push
 echo Files pushed, operation done.
