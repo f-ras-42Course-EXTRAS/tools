@@ -6,7 +6,7 @@
 #    By: fras <fras@student.codam.nl>                 +#+                      #
 #                                                    +#+                       #
 #    Created: 2023/05/05 03:44:02 by fras          #+#    #+#                  #
-#    Updated: 2023/05/06 14:15:37 by fras          ########   odam.nl          #
+#    Updated: 2023/05/06 14:19:10 by fras          ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -94,10 +94,10 @@ git add $source_files
 git commit -m "project upload"
 
 ##above verification (untested)
-while [ -z ${git_push_done_check+x} ]
+while [ -z "${git_push_done_check}" ]
 do
 	git_push_done_check=$(git push | grep "done");
-	if [ ! -z ${$git_push_done_check+x} ];
+	if [ ! -z "${$git_push_done_check}" ];
 	then
 		echo Files pushed, operation done.;
 	else
