@@ -6,7 +6,7 @@
 #    By: fras <fras@student.codam.nl>                 +#+                      #
 #                                                    +#+                       #
 #    Created: 2023/05/05 03:44:02 by fras          #+#    #+#                  #
-#    Updated: 2023/05/06 04:35:56 by fras          ########   odam.nl          #
+#    Updated: 2023/05/06 04:54:20 by fras          ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -87,7 +87,7 @@ cd $destination_directory
 # Git working
 echo Starting to initialize git
 git init
-echo Enter the Git remote link to setup upload for eval:
+echo Enter the Git remote url to setup upload for eval:
 read git_repository
 git remote add origin $git_repository
 echo Repository remote added succesfully..
