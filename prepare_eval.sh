@@ -6,7 +6,7 @@
 #    By: fras <fras@student.codam.nl>                 +#+                      #
 #                                                    +#+                       #
 #    Created: 2023/05/05 03:44:02 by fras          #+#    #+#                  #
-#    Updated: 2023/05/06 03:54:17 by fras          ########   odam.nl          #
+#    Updated: 2023/05/06 04:35:56 by fras          ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,7 +38,6 @@ do
 		file_not_found=true;
 	fi
 done
-
 if [ "$file_not_found" = true ];
 then
 	echo Found unexisting files. Closing program. 
