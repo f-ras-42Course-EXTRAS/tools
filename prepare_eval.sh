@@ -6,7 +6,7 @@
 #    By: fras <fras@student.codam.nl>                 +#+                      #
 #                                                    +#+                       #
 #    Created: 2023/05/05 03:44:02 by fras          #+#    #+#                  #
-#    Updated: 2023/05/06 06:31:04 by fras          ########   odam.nl          #
+#    Updated: 2023/05/06 06:50:40 by fras          ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -108,13 +108,14 @@ echo Copied files deleted.
 
 ##verififing Git clone (--YET UNTESTED)
 echo Testing if was upload succesful
-source_files=$(find . ! -name '.*')
+source_files=$(find . ! -name '.*' ! -name $0)
 echo Cloning repository..
-git clone $git_repository test
+git clone $git_repository $destination_directory
 echo Checking if files are as expected..
-cd test
+cd $destination_directory
 dest_files=$(find . | -name '.git')
-cd ..
+cd $starting_directory
+echo Deleting clone..
 rm -rf $destination_directory
 if [ "$source_files" == "$dest_files"];
 then
