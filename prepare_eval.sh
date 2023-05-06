@@ -6,7 +6,7 @@
 #    By: fras <fras@student.codam.nl>                 +#+                      #
 #                                                    +#+                       #
 #    Created: 2023/05/05 03:44:02 by fras          #+#    #+#                  #
-#    Updated: 2023/05/06 03:47:44 by fras          ########   odam.nl          #
+#    Updated: 2023/05/06 03:54:17 by fras          ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -64,7 +64,7 @@ then
 		echo "Press ENTER to continue"
 		read
 		echo "Continueing program..."
-		else
+	else
 		echo Delete directory and try again.
 		exit;
 	fi
@@ -96,9 +96,7 @@ git add .
 git commit -m "project done"
 git push
 echo Files pushed, operation done.
-echo STARTING DIRECTORY WAS: $starting_directory
 cd $starting_directory
 echo Going back to starting directory.
 rm -rf $destination_directory
 echo Copied files deleted.
-echo STARTING DIRECTORY WAS: $starting_directory
