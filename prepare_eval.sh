@@ -6,7 +6,7 @@
 #    By: fras <fras@student.codam.nl>                 +#+                      #
 #                                                    +#+                       #
 #    Created: 2023/05/05 03:44:02 by fras          #+#    #+#                  #
-#    Updated: 2023/05/06 05:40:52 by fras          ########   odam.nl          #
+#    Updated: 2023/05/06 06:31:04 by fras          ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -79,12 +79,11 @@ then
 	echo .gitignore found
 	echo "Copying file(s) <$gitignore_paths> to <$destination_directory>"
 	cp $gitignore_paths $destination_directory
-	
 	exclude_gitignore_files_for_upload=" --"
 	for i in $gitignore_paths;
 	do
-		exclude_gitignore_files_for_upload+=" '!:$i'"
-done
+		exclude_gitignore_files_for_upload+=" '!:$i'";
+	done
 fi
 
 echo "Files transfered to $destination_directory -> changing directory"
@@ -96,7 +95,8 @@ git init
 echo Enter the Git remote url to setup your upload for eval:
 read git_repository
 git remote add origin $git_repository
-echo Repository remote succesfully added..
+echo Repository remote added succesfully..
+##TODO: ^ built verification.
 git add . $exclude_gitignore_files_for_upload
 git commit -m "project done"
 git push
@@ -105,3 +105,25 @@ cd $starting_directory
 echo Going back to starting directory.
 rm -rf $destination_directory
 echo Copied files deleted.
+
+##verififing Git clone (--YET UNTESTED)
+echo Testing if was upload succesful
+source_files=$(find . ! -name '.*')
+echo Cloning repository..
+git clone $git_repository test
+echo Checking if files are as expected..
+cd test
+dest_files=$(find . | -name '.git')
+cd ..
+rm -rf $destination_directory
+if [ "$source_files" == "$dest_files"];
+then
+	echo Upload succesful! Congrats. Good luck with the eval.;
+else
+	echo ERROR: Upload unsuccesful.
+	echo Expected files in destination:
+	echo $source_files
+	echo Actual files uploaded in destination:
+	echo $dest_files
+	exit 1;
+fi
