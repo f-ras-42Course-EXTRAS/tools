@@ -6,7 +6,7 @@
 #    By: fras <fras@student.codam.nl>                 +#+                      #
 #                                                    +#+                       #
 #    Created: 2023/05/05 03:44:02 by fras          #+#    #+#                  #
-#    Updated: 2023/05/06 14:19:10 by fras          ########   odam.nl          #
+#    Updated: 2023/07/12 13:50:30 by fras          ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -90,7 +90,7 @@ read git_remote
 git remote add origin $git_remote
 echo Repository remote added succesfully..
 ##TODO: ^ built verification.
-git add $source_files
+git add .
 git commit -m "project upload"
 
 ##above verification (untested)
