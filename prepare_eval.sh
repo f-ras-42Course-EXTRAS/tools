@@ -6,7 +6,7 @@
 #    By: fras <fras@student.codam.nl>                 +#+                      #
 #                                                    +#+                       #
 #    Created: 2023/05/05 03:44:02 by fras          #+#    #+#                  #
-#    Updated: 2023/07/12 13:50:30 by fras          ########   odam.nl          #
+#    Updated: 2023/07/13 20:52:24 by fras          ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
@@ -65,7 +65,7 @@ fi
 # Get project source
 echo Going to project directory
 cd $project_directory
-source_files=$(find . ! -name '.*' ! -name $0)
+source_files=$(find . ! -name '.*' ! -name $0) ##(bug 1) <- find command not working properly.
 
 # Copying files
 echo Transfering files to temporary directory
@@ -82,21 +82,20 @@ fi
 echo "Files transfered to $destination_directory -> changing directory"
 cd $destination_directory
 
-# Git working
+# Git upload
 echo Starting to initialize git
 git init
 echo Enter the Git remote-url to setup your upload for eval:
 read git_remote
 git remote add origin $git_remote
 echo Repository remote added succesfully..
-##TODO: ^ built verification.
 git add .
 git commit -m "project upload"
 
-##above verification (untested)
 while [ -z "${git_push_done_check}" ]
 do
-	git_push_done_check=$(git push | grep "done");
+	git push
+	git_push_done_check=$(git push 2>&1 | grep "up-to-date");
 	if [ ! -z "${$git_push_done_check}" ];
 	then
 		echo Files pushed, operation done.;
@@ -119,10 +118,10 @@ echo Cloning repository..
 git clone $git_remote $destination_directory
 echo Checking if files are uploaded as expected..
 cd $destination_directory
-dest_files=$(find . ! -name '.git')
+dest_files=$(find . ! -name '.git') ##(bug 2) <-- fix here as well.
 echo Deleting clone..
 rm -rf $destination_directory
-if [ "$source_files" == "$dest_files"];
+if [ "$source_files" == "$dest_files"]; ##(3) <-- add .gitignore to sourcefiles
 then
 	echo Upload succesful! Congrats. Good luck with the eval.;
 else
